@@ -1,0 +1,10 @@
+[
+  {
+    "path": "/hello",
+    "content-type": "application/json",
+    "success-status-code": 200,
+    "success-body": "{\"hello\" : \"world\"}",
+    "error-status-code": 400,
+    "error-body": "{\"errorMessage\" : \"bad request\"}"
+  }
+]
