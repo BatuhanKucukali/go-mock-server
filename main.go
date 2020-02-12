@@ -9,9 +9,13 @@ import (
 )
 
 type Contract struct {
-	Req  *Request  `json:"request"`
-	Res  *Response `json:"response"`
-	Auth *Auth     `json:"auth"`
+	Map  *[]Mapping `json:"mappings"`
+	Auth *Auth      `json:"auth"`
+}
+
+type Mapping struct {
+	Req *Request  `json:"request"`
+	Res *Response `json:"response"`
 }
 
 type Request struct {
