@@ -29,7 +29,7 @@
       "password": "jeffteenjefftyjeff"
     },
     "tokenCredentials": {
-      "Bearer : ": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImp0aSI6ImYzZDVmY2UwLWZiYTMtNDNiOS05NDRjLTMzYmQ1ZTMzNTYwMiIsImlhdCI6MTU4MTM2MTU4OSwiZXhwIjoxNTgxMzY1MTg5fQ.tt11q82zc2i852mEm30YScILqNFP2G_ROnrSZT7Zf28"
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImp0aSI6ImYzZDVmY2UwLWZiYTMtNDNiOS05NDRjLTMzYmQ1ZTMzNTYwMiIsImlhdCI6MTU4MTM2MTU4OSwiZXhwIjoxNTgxMzY1MTg5fQ.tt11q82zc2i852mEm30YScILqNFP2G_ROnrSZT7Zf28"
     }
   }
 }

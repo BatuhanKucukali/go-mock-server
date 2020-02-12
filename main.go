@@ -9,12 +9,36 @@ import (
 )
 
 type Contract struct {
-	Path              string `json:"path"`
-	ContentType       string `json:"content-type"`
-	SuccessStatusCode uint16 `json:"success-status-code"`
-	SuccessBody       string `json:"success-body"`
-	ErrorStatusCode   uint16 `json:"error-status-code"`
-	ErrorBody         string `json:"error-body"`
+	Req  *Request  `json:"request"`
+	Res  *Response `json:"response"`
+	Auth *Auth     `json:"auth"`
+}
+
+type Request struct {
+	Method string `json:"method"`
+	Url    string `json:"url"`
+}
+
+type Response struct {
+	Status       uint16            `json:"status"`
+	FixedDelayMs uint64            `json:"fixedDelayMilliseconds"`
+	Body         string            `json:"body"`
+	JsonBody     string            `json:"jsonBody"`
+	Headers      map[string]string `json:"headers"`
+}
+
+type Auth struct {
+	BasicAuth *BasicAuth `json:"basicAuthCredentials"`
+	TokenAuth *TokenAuth `json:"tokenCredentials"`
+}
+
+type BasicAuth struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type TokenAuth struct {
+	Token string `json:"token"`
 }
 
 func main() {
