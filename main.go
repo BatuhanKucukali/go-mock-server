@@ -6,16 +6,18 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"text/template/parse"
+	"time"
 )
 
 type Contract struct {
-	Map  *[]Mapping `json:"mappings"`
-	Auth *Auth      `json:"auth"`
+	Maps []Mapping `json:"mappings"`
+	Auth *Auth     `json:"auth"`
 }
 
 type Mapping struct {
-	Req *Request  `json:"request"`
-	Res *Response `json:"response"`
+	Req  *Request  `json:"request"`
+	Resp *Response `json:"response"`
 }
 
 type Request struct {
@@ -27,7 +29,7 @@ type Response struct {
 	Status       uint16            `json:"status"`
 	FixedDelayMs uint64            `json:"fixedDelayMilliseconds"`
 	Body         string            `json:"body"`
-	JsonBody     string            `json:"jsonBody"`
+	JsonBody     parse.Tree        `json:"jsonBody"` // TODO json parse
 	Headers      map[string]string `json:"headers"`
 }
 
@@ -54,43 +56,36 @@ func main() {
 
 	handlers(c)
 
+	// TODO add auth (basic & token)
+
 	_ = http.ListenAndServe(":8090", nil)
 }
 
-func handlers(c []Contract) {
-	for i := 0; i < len(c); i++ {
-		r := c[i]
+func handlers(c Contract) {
+	for i := 0; i < len(c.Maps); i++ {
+		m := c.Maps[i]
 
-		http.HandleFunc(r.Path, func(w http.ResponseWriter, req *http.Request) {
+		// TODO add HTTP method
+		http.HandleFunc(m.Req.Url, func(w http.ResponseWriter, req *http.Request) {
 
-			code := r.SuccessStatusCode
-			body := r.SuccessBody
-			if err(req) {
-				code = r.ErrorStatusCode
-				body = r.ErrorBody
+			sleep(m.Resp.FixedDelayMs)
+
+			for k, v := range m.Resp.Headers {
+				w.Header().Add(k, v)
 			}
-
-			w.Header().Add("Content-Type", r.ContentType)
-			w.WriteHeader(int(code))
-			_, _ = w.Write([]byte(body))
+			w.WriteHeader(int(m.Resp.Status))
+			_, _ = w.Write([]byte(m.Resp.Body)) // TODO add body || jsonBody
 		})
 
 	}
 }
 
-func err(req *http.Request) bool {
-	key, ok := req.URL.Query()["success"]
-
-	if !ok || len(key[0]) < 1 {
-		log.Println("Url Param 'success' is missing")
-		return false
-	}
-
-	return key[0] == "false"
+func sleep(millisecond uint64) {
+	time.Sleep(time.Duration(millisecond) * time.Millisecond)
 }
 
-func contracts(file []byte) []Contract {
-	var c []Contract
+func contracts(file []byte) Contract {
+	var c Contract
 
 	err := json.Unmarshal(file, &c)
 	if err != nil {

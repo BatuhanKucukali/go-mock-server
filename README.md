@@ -11,7 +11,7 @@
       },
       "response": {
         "status": 200,
-        "fixedDelayMilliseconds": 2000,
+        "fixedDelayMilliseconds": 5000,
         "body": "string content",
         "jsonBody": {
           "status": "Success",
@@ -37,7 +37,7 @@
 
 ### Feature
 
-- [ ] Multiple error response
+- [ ] Random response like ${randomInt(5)} or ${boolen}
 - [ ] Serve contract from external source
 - [ ] XML Support
 - [ ] Support OpenAPI Specification
