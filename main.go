@@ -54,16 +54,16 @@ func main() {
 
 	c := contracts(file)
 
-	handlers(c)
+	handlers(c.Maps)
 
 	// TODO add auth (basic & token)
 
 	_ = http.ListenAndServe(":8090", nil)
 }
 
-func handlers(c Contract) {
-	for i := 0; i < len(c.Maps); i++ {
-		m := c.Maps[i]
+func handlers(maps []Mapping) {
+	for i := 0; i < len(maps); i++ {
+		m := maps[i]
 
 		// TODO add HTTP method
 		http.HandleFunc(m.Req.Url, func(w http.ResponseWriter, req *http.Request) {
