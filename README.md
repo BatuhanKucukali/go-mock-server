@@ -9,18 +9,20 @@
         "method": "GET",
         "url": "/hello"
       },
-      "response": {
-        "status": 200,
-        "fixedDelayMilliseconds": 5000,
-        "body": "string content",
-        "jsonBody": {
-          "status": "Success",
-          "message": "Successful response body"
-        },
-        "headers": {
-          "Content-Type": "application/json"
+      "responses": [
+        {
+          "status": 200,
+          "fixedDelayMilliseconds": 5000,
+          "body": "string content",
+          "jsonBody": {
+            "status": "Success",
+            "message": "Successful response body"
+          },
+          "headers": {
+            "Content-Type": "application/json"
+          }
         }
-      }
+      ]
     }
   ],
   "auth": {
@@ -38,6 +40,7 @@
 ### Feature
 
 - [ ] Random response like ${randomInt(5)} or ${boolen}
+- [ ] Add request condition for response
 - [ ] Serve contract from external source
 - [ ] XML Support
 - [ ] Support OpenAPI Specification
