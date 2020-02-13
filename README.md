@@ -9,20 +9,56 @@
         "method": "GET",
         "url": "/hello"
       },
-      "responses": [
-        {
-          "status": 200,
-          "fixedDelayMilliseconds": 5000,
-          "body": "string content",
-          "jsonBody": {
-            "status": "Success",
-            "message": "Successful response body"
-          },
-          "headers": {
-            "Content-Type": "application/json"
-          }
-        }
-      ]
+      "responses":  [
+           {
+             "condition": null,
+             "status": 200,
+             "fixedDelayMilliseconds": 5000,
+             "body": "string content",
+             "jsonBody": {
+               "status": "Success",
+               "message": "Successful response body"
+             },
+             "headers": {
+               "Content-Type": "application/json"
+             }
+           },
+           {
+             "condition": {
+               "body": {
+                 "name": "bar",
+                 "surname": "foo"
+               }
+             },
+             "status": 401,
+             "fixedDelayMilliseconds": 5000,
+             "body": "string content",
+             "jsonBody": {
+               "status": "Bad Request",
+               "message": "Bar foo is not authenticated"
+             },
+             "headers": {
+               "Content-Type": "application/json"
+             }
+           },
+           {
+             "condition": {
+               "body": {
+                 "name": "bar"
+               }
+             },
+             "status": 404,
+             "fixedDelayMilliseconds": 5000,
+             "body": "string content",
+             "jsonBody": {
+               "status": "Bad Request",
+               "message": "foo not found!"
+             },
+             "headers": {
+               "Content-Type": "application/json"
+             }
+           }
+         ]
     }
   ],
   "auth": {
@@ -40,7 +76,7 @@
 ### Feature
 
 - [ ] Random response like ${randomInt(5)} or ${boolen}
-- [ ] Add request condition for response
+- [x] Add request body condition for response
 - [ ] Serve contract from external source
 - [ ] XML Support
 - [ ] Support OpenAPI Specification

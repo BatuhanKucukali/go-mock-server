@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"text/template/parse"
 	"time"
 )
 
@@ -16,8 +15,8 @@ type Contract struct {
 }
 
 type Mapping struct {
-	Req  *Request  `json:"request"`
-	Resp *Response `json:"response"`
+	Req  *Request     `json:"request"`
+	Resp [] *Response `json:"responses"`
 }
 
 type Request struct {
@@ -26,11 +25,16 @@ type Request struct {
 }
 
 type Response struct {
+	Condition    *Condition        `json:"condition"`
 	Status       uint16            `json:"status"`
 	FixedDelayMs uint64            `json:"fixedDelayMilliseconds"`
 	Body         string            `json:"body"`
-	JsonBody     parse.Tree        `json:"jsonBody"` // TODO json parse
+	JsonBody     map[string]string `json:"jsonBody"` // TODO json parse
 	Headers      map[string]string `json:"headers"`
+}
+
+type Condition struct {
+	Body map[string]interface{} `json:"body"`
 }
 
 type Auth struct {
@@ -68,13 +72,56 @@ func handlers(maps []Mapping) {
 		// TODO add HTTP method
 		http.HandleFunc(m.Req.Url, func(w http.ResponseWriter, req *http.Request) {
 
-			sleep(m.Resp.FixedDelayMs)
+			var response *Response
 
-			for k, v := range m.Resp.Headers {
+			var request map[string]interface{}
+			decoder := json.NewDecoder(req.Body)
+
+			_ = decoder.Decode(&request)
+
+			for i := 0; i < len(m.Resp); i++ {
+				r := m.Resp[i]
+
+				if response == nil && r.Condition == nil {
+					response = r
+					continue
+				}
+
+				if r.Condition.Body != nil {
+
+					allParametersSatisfied := true
+					for k, v := range r.Condition.Body {
+						parameter := request[k]
+
+						if parameter != v {
+							allParametersSatisfied = false
+							break
+						}
+					}
+
+					if allParametersSatisfied {
+						response = r
+					}
+				}
+
+			}
+
+			sleep(response.FixedDelayMs)
+
+			for k, v := range response.Headers {
 				w.Header().Add(k, v)
 			}
-			w.WriteHeader(int(m.Resp.Status))
-			_, _ = w.Write([]byte(m.Resp.Body)) // TODO add body || jsonBody
+			w.WriteHeader(int(response.Status))
+			var responseBytes []byte
+
+			if response.JsonBody != nil {
+				responseBytes, _ = json.Marshal(response.JsonBody)
+			} else if response.Body != "" {
+				responseBytes = []byte(response.Body)
+			}
+
+			_, _ = w.Write(responseBytes)
+
 		})
 
 	}
