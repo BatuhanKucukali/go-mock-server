@@ -72,11 +72,3 @@
   }
 }
 ```
-
-### Feature
-
-- [ ] Random response like ${randomInt(5)} or ${boolen}
-- [x] Add request body condition for response
-- [ ] Serve contract from external source
-- [ ] XML Support
-- [ ] Support OpenAPI Specification
