@@ -3,7 +3,8 @@
     {
       "request": {
         "method": "GET",
-        "url": "/hello"
+        "url": "/hello",
+        "authType": "basic"
       },
       "responses": [
         {
@@ -24,7 +25,8 @@
     {
       "request": {
         "method": "POST",
-        "url": "/hello/world"
+        "url": "/hello/world",
+        "authType": "bearer"
       },
       "responses": [
         {
@@ -78,13 +80,11 @@
       ]
     }
   ],
-  "auth": {
-    "basicAuthCredentials": {
+  "credentials": {
+    "basicAuth": {
       "username": "jeff@example.com",
       "password": "jeffteenjefftyjeff"
     },
-    "tokenCredentials": {
-      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImp0aSI6ImYzZDVmY2UwLWZiYTMtNDNiOS05NDRjLTMzYmQ1ZTMzNTYwMiIsImlhdCI6MTU4MTM2MTU4OSwiZXhwIjoxNTgxMzY1MTg5fQ.tt11q82zc2i852mEm30YScILqNFP2G_ROnrSZT7Zf28"
-    }
+    "bearerToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImp0aSI6ImYzZDVmY2UwLWZiYTMtNDNiOS05NDRjLTMzYmQ1ZTMzNTYwMiIsImlhdCI6MTU4MTM2MTU4OSwiZXhwIjoxNTgxMzY1MTg5fQ.tt11q82zc2i852mEm30YScILqNFP2G_ROnrSZT7Zf28"
   }
 }
