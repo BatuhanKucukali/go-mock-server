@@ -1,27 +1,30 @@
 package main
 
 import (
+	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
 type Contract struct {
-	Maps []Mapping `json:"mappings"`
-	Auth *Auth     `json:"auth"`
+	Maps        []Mapping    `json:"mappings"`
+	Credentials *Credentials `json:"credentials"`
 }
 
 type Mapping struct {
-	Req  *Request     `json:"request"`
-	Resp [] *Response `json:"responses"`
+	Req  *Request    `json:"request"`
+	Resp []*Response `json:"responses"`
 }
 
 type Request struct {
-	Method string `json:"method"`
-	Url    string `json:"url"`
+	Method   string    `json:"method"`
+	Url      string    `json:"url"`
+	AuthType *AuthType `json:"authType"`
 }
 
 type Response struct {
@@ -37,9 +40,9 @@ type Condition struct {
 	Body map[string]interface{} `json:"body"`
 }
 
-type Auth struct {
-	BasicAuth *BasicAuth `json:"basicAuthCredentials"`
-	TokenAuth *TokenAuth `json:"tokenCredentials"`
+type Credentials struct {
+	BasicAuth   *BasicAuth `json:"basicAuth"`
+	BearerToken string     `json:"bearerToken"`
 }
 
 type BasicAuth struct {
@@ -47,9 +50,15 @@ type BasicAuth struct {
 	Password string `json:"password"`
 }
 
-type TokenAuth struct {
-	Token string `json:"token"`
-}
+type AuthType string
+
+const (
+	BasicType     AuthType = "basic"
+	BasicPrefix   string   = "Basic"
+	BearerType    AuthType = "bearer"
+	BearerPrefix  string   = "Bearer"
+	Authorization string   = "Authorization"
+)
 
 func main() {
 	fmt.Println("Go Mock Server Started...")
@@ -58,19 +67,30 @@ func main() {
 
 	c := contracts(file)
 
-	handlers(c.Maps)
-
-	// TODO add auth (basic & token)
+	initRouters(c)
 
 	_ = http.ListenAndServe(":8090", nil)
 }
 
-func handlers(maps []Mapping) {
+func initRouters(c Contract) {
+	maps := c.Maps
+	credentials := c.Credentials
+
 	for i := 0; i < len(maps); i++ {
 		m := maps[i]
 
 		// TODO add HTTP method
 		http.HandleFunc(m.Req.Url, func(w http.ResponseWriter, req *http.Request) {
+
+			if m.Req.AuthType != nil {
+				authorizationHeaders := req.Header[Authorization]
+				if authorizationHeaders == nil || !isAuthorized(m.Req.AuthType, authorizationHeaders[0], credentials) {
+					w.WriteHeader(http.StatusUnauthorized)
+					responseBytes := []byte(http.StatusText(http.StatusUnauthorized))
+					_, _ = w.Write(responseBytes)
+					return
+				}
+			}
 
 			var response *Response
 
@@ -147,4 +167,33 @@ func read(fileName string) []byte {
 		log.Fatal("Contract file does not read. Error:", err)
 	}
 	return file
+}
+
+func isAuthorized(authType *AuthType, authorizationHeader string, credentials *Credentials) bool {
+	if *authType == BasicType {
+		if !strings.HasPrefix(authorizationHeader, BasicPrefix) {
+			return false
+		}
+
+		base64String := strings.SplitAfter(authorizationHeader, BasicPrefix+" ")
+		decodedBase64String, _ := b64.StdEncoding.DecodeString(base64String[1])
+		sendUserNamePassword := string(decodedBase64String)
+		authorizedUserNamePassword := credentials.BasicAuth.Username + ":" + credentials.BasicAuth.Password
+		if strings.Compare(sendUserNamePassword, authorizedUserNamePassword) != 0 {
+			return false
+		}
+	} else if *authType == BearerType {
+		if !strings.HasPrefix(authorizationHeader, BearerPrefix) {
+			return false
+		}
+
+		token := strings.SplitAfter(authorizationHeader, BearerPrefix+" ")
+		if strings.Compare(token[1], credentials.BearerToken) != 0 {
+			return false
+		}
+	} else {
+		return false
+	}
+
+	return true
 }
