@@ -1,0 +1,10 @@
+github.com/basgys/goxml2json v1.1.0 h1:4ln5i4rseYfXNd86lGEB+Vi652IsIXIvggKM/BhUKVw=
+github.com/basgys/goxml2json v1.1.0/go.mod h1:wH7a5Np/Q4QoECFIU8zTQlZwZkrilY0itPfecMw41Dw=
+github.com/clbanning/anyxml v1.2.2 h1:EqBXr26KEC7tuGLDH7ZSeFmaE3yft0h386m5uydpNbU=
+github.com/clbanning/anyxml v1.2.2/go.mod h1:m8+zXuK8aS9lnXzfpSLUUjXoqcZ41osGX+JXr09eOjY=
+golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
+golang.org/x/net v0.0.0-20200301022130-244492dfa37a h1:GuSPYbZzB5/dcLNCwLQLsg3obCJtX9IJhpXkvY7kzk0=
+golang.org/x/net v0.0.0-20200301022130-244492dfa37a/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
+golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/text v0.3.0 h1:g61tztE5qeGQ89tm6NTjjM9VPIm088od1l6aSorWRWg=
+golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
