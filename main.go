@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
+	xj "github.com/basgys/goxml2json"
+	"github.com/clbanning/anyxml"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -22,9 +25,10 @@ type Mapping struct {
 }
 
 type Request struct {
-	Method   string    `json:"method"`
-	Url      string    `json:"url"`
-	AuthType *AuthType `json:"authType"`
+	Method      string    `json:"method"`
+	Url         string    `json:"url"`
+	ContentType string    `json:"contentType"`
+	AuthType    *AuthType `json:"authType"`
 }
 
 type Response struct {
@@ -95,9 +99,23 @@ func initRouters(c Contract) {
 			var response *Response
 
 			var request map[string]interface{}
-			decoder := json.NewDecoder(req.Body)
 
-			_ = decoder.Decode(&request)
+			isXmlContent := m.Req.ContentType == "application/xml"
+
+			if isXmlContent {
+
+				buf := new(bytes.Buffer)
+				buf.ReadFrom(req.Body)
+				s := buf.String()
+
+				xml := strings.NewReader(s)
+				convertedValue, _ := xj.Convert(xml)
+
+				json.Unmarshal([]byte(convertedValue.String()), &request)
+			} else {
+				decoder := json.NewDecoder(req.Body)
+				_ = decoder.Decode(&request)
+			}
 
 			for i := 0; i < len(m.Resp); i++ {
 				r := m.Resp[i]
@@ -135,7 +153,12 @@ func initRouters(c Contract) {
 			var responseBytes []byte
 
 			if response.JsonBody != nil {
-				responseBytes, _ = json.Marshal(response.JsonBody)
+				if isXmlContent {
+					x, _ := anyxml.XmlIndent(response.JsonBody, "", "  ", "root")
+					responseBytes = []byte(string(x))
+				} else {
+					responseBytes, _ = json.Marshal(response.JsonBody)
+				}
 			} else if response.Body != "" {
 				responseBytes = []byte(response.Body)
 			}
